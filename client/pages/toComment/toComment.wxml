@@ -1,0 +1,47 @@
+<!--pages/toComment/toComment.wxml-->
+<view wx:if="{{!userInfo}}">
+  <view class="unlogin-card">
+    <view class="unlogin-head"></view>
+    <view class="unlogin-info">
+      <view class="unlogin-text">未登录</view>
+      <view class="unlogin-tips">点击微信登录后可查看添加影评</view>
+    </view>
+  </view>
+  <button class="unlogin-btn" open-type='getUserInfo' bindgetuserinfo='onTapLogin'>微信登录</button>
+</view>
+
+<view wx:else>
+  <view class='questionList'>
+    <view class='question-block' wx:for="{{questionBase}}">
+      <view class='type-1' wx:if="{{item.type == 1}}">
+        <view class='question-text' wx:if="{{item.selectIndex != null}}">{{item.name}}</view>
+        <view class='question-text-select' wx:if="{{item.selectIndex == null}}">{{item.name}}</view>
+        <picker mode="selector" range="{{listArray}}" value="{{index}}" bindchange="commonSelected" bindcancel='commonCancel' class='ans-selector'>
+          <view wx:if="{{item.selectIndex == null}}">{{showItem}}</view>
+          <view wx:if="{{item.selectIndex != null}}" class='first-select'>{{showItem}}</view>
+        </picker>
+      </view>
+      <view class='type-2' wx:if="{{item.type == 2}}">
+        <view class='question-text' wx:if="{{item.selectIndex != null}}">{{item.name}}</view>
+        <view class='question-text-select' wx:if="{{item.selectIndex == null}}">{{item.name}}</view>
+        <view class='choice-block' wx:for="{{item.choice}}" wx:for-item="answer" wx:for-index="answerId" bindtap='selectOneItem' data-id="{{answerId}}" data-choice="{{answer}}" data-th='{{index}}'>
+          <image class='small-icon' src='/images/click.png' wx:if="{{answerId != item.selectIndex}}"></image>
+          <image class='small-icon' src='/images/correct.png' wx:if="{{answerId == item.selectIndex}}"></image>
+          <view class='choice-text' wx:if="{{answerId != item.selectIndex}}">{{answer}}</view>
+          <view class='choice-text-select' wx:if="{{answerId == item.selectIndex}}">{{answer}}</view>
+        </view>
+      </view>
+      <view class='type-3' wx:if="{{item.type == 3}}">
+        <view class='question-text' wx:if="{{item.selectIndex != null}}">{{item.name}}</view>
+        <view class='question-text-select' wx:if="{{item.selectIndex == null}}">{{item.name}}</view>
+        <view class='conts'>
+        <textarea class="input-comment" placeholder="请开始你的表演..." placeholder-class = 'input-placeholder' auto-focus bindinput='bindInputText' maxlength='{{maxWordNum}}'>
+          <text class="currentWordNumber">{{currentWordNumber|0}}/{{maxWordNum}}</text>
+          <text class="hint">{{texts}}</text>
+        </textarea>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
