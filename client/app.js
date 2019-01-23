@@ -31,6 +31,7 @@ App({
           error && error()
         } else {
           this.data.locationAuthType = AUTHORIZED
+          console.log(res)
           this.doQcloudLogin({ success, error })
         }
       }
@@ -100,7 +101,7 @@ App({
           }
         })
       },
-      fail: () => {
+      fail: () => { 
         error && error()
       }
     })

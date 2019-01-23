@@ -1,29 +1,43 @@
 <!--pages/toComment/toComment.wxml-->
-<view wx:if="{{!userInfo}}">
-  <view class="unlogin-card">
+<view wx:if="{{!userInfo || flag}}">
+  <view wx:if="{{!userInfo}}" class="unlogin-card">
     <view class="unlogin-head"></view>
     <view class="unlogin-info">
       <view class="unlogin-text">未登录</view>
-      <view class="unlogin-tips">点击微信登录后可查看添加影评</view>
+      <view class="unlogin-tips">点击微信登录后可进行课程评价</view>
     </view>
   </view>
-  <button class="unlogin-btn" open-type='getUserInfo' bindgetuserinfo='onTapLogin'>微信登录</button>
+  <view wx:if="{{flag}}" class="unlogin-card">
+    <image class="unlogin-head" src='{{userInfo.avatarUrl}}'></image>
+    <view class="unlogin-info">
+      <view class="unlogin-text">{{userInfo.nickName}}</view>
+      <view class="unlogin-tips">{{stuID}}</view>
+    </view>
+  </view>
+  <button class="unlogin-btn" open-type='getUserInfo' wx:if="{{!userInfo}}"bindgetuserinfo='onTapLogin'>微信登录</button>
+  <button class="unlogin-btn"  wx:if="{{flag}}" bindtap='getStudentInfo' >输入学号</button>
+  <modal hidden="{{hiddenInput}}" title="请输入学号" confirm-text="提交" cancel-text="取消" bindcancel="cancel" bindconfirm="confirm">  
+    <input type='text' placeholder="请输入您的学号" bindinput='bindStudentNumber' auto-focus/>  
+  </modal>
+  <modal hidden="{{hiddenUnsure}}" title="请确认您的学号" confirm-text="很确认" cancel-text="还改改" bindcancel="getBack" bindconfirm="verySure">  
+    <view class='sure-id'>{{stuID}}</view>
+  </modal>
 </view>
 
-<view wx:else>
+<scroll-view class='Question' scroll-y='{{true}}' wx:else>
   <view class='questionList'>
     <view class='question-block' wx:for="{{questionBase}}">
-      <view class='type-1' wx:if="{{item.type == 1}}">
-        <view class='question-text' wx:if="{{item.selectIndex != null}}">{{item.name}}</view>
-        <view class='question-text-select' wx:if="{{item.selectIndex == null}}">{{item.name}}</view>
+      <view class='type-1' wx:if="{{item.types == 1}}">
+        <view class='question-text' wx:if="{{item.selectIndex == null}}">{{item.names}}</view>
+        <view class='question-text-select' wx:if="{{item.selectIndex != null}}">{{item.names}}</view>
         <picker mode="selector" range="{{listArray}}" value="{{index}}" bindchange="commonSelected" bindcancel='commonCancel' class='ans-selector'>
           <view wx:if="{{item.selectIndex == null}}">{{showItem}}</view>
           <view wx:if="{{item.selectIndex != null}}" class='first-select'>{{showItem}}</view>
         </picker>
       </view>
-      <view class='type-2' wx:if="{{item.type == 2}}">
-        <view class='question-text' wx:if="{{item.selectIndex != null}}">{{item.name}}</view>
-        <view class='question-text-select' wx:if="{{item.selectIndex == null}}">{{item.name}}</view>
+      <view class='type-2' wx:if="{{item.types == 2}}">
+        <view class='question-text' wx:if="{{item.selectIndex == null}}">{{item.names}}</view>
+        <view class='question-text-select' wx:if="{{item.selectIndex != null}}">{{item.names}}</view>
         <view class='choice-block' wx:for="{{item.choice}}" wx:for-item="answer" wx:for-index="answerId" bindtap='selectOneItem' data-id="{{answerId}}" data-choice="{{answer}}" data-th='{{index}}'>
           <image class='small-icon' src='/images/click.png' wx:if="{{answerId != item.selectIndex}}"></image>
           <image class='small-icon' src='/images/correct.png' wx:if="{{answerId == item.selectIndex}}"></image>
@@ -31,9 +45,9 @@
           <view class='choice-text-select' wx:if="{{answerId == item.selectIndex}}">{{answer}}</view>
         </view>
       </view>
-      <view class='type-3' wx:if="{{item.type == 3}}">
-        <view class='question-text' wx:if="{{item.selectIndex != null}}">{{item.name}}</view>
-        <view class='question-text-select' wx:if="{{item.selectIndex == null}}">{{item.name}}</view>
+      <view class='type-3' wx:if="{{item.types == 3}}">
+        <view class='question-text' wx:if="{{item.selectIndex == null}}">{{item.names}}</view>
+        <view class='question-text-select' wx:if="{{item.selectIndex != null}}">{{item.names}}</view>
         <view class='conts'>
         <textarea class="input-comment" placeholder="请开始你的表演..." placeholder-class = 'input-placeholder' auto-focus bindinput='bindInputText' maxlength='{{maxWordNum}}'>
           <text class="currentWordNumber">{{currentWordNumber|0}}/{{maxWordNum}}</text>
@@ -43,5 +57,11 @@
       </view>
     </view>
   </view>
+</scroll-view>
+
+
+<view class='submit' wx:if="{{userInfo && !flag}}" bindtap='checkChoice'>
+    <image class='submit-img' src='/images/email.png'></image>
+    <view class='submit-text'>提交评价</view>
 </view>
 
