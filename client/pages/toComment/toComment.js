@@ -2,13 +2,14 @@
 const app = getApp()
 const qcloud = require('../../vendor/wafer2-client-sdk/index')
 const config = require('../../config')
-const _ = require('../../utils/util')
+var util = require('../../utils/util.js')
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
+    timeBefore:null,
     stuID: "请输入您的学号",
     stuInfo:null,
     theStudentNumber:"",
@@ -226,6 +227,8 @@ Page({
             icon: 'none',
             title: '上传信息失败'
           })
+        }else{
+          this.getStudent()
         }
       },
       fail: () => {
@@ -258,7 +261,6 @@ Page({
       success: result => {
         wx.hideLoading()
         if (!result.data.code) {
-          console.log(result.data.data)
           this.setData({
             stuInfo:result.data.data
           })
@@ -329,6 +331,23 @@ Page({
 
   },
   checkChoice:function() {
+    if (this.data.stuInfo.updateTime == util.formatTime(new Date()).substring(0, 10)) {
+      let id = this.data.stuInfo.studentID
+      wx.showModal({
+        title: '哎呀',
+        content: '你今天已经反馈了啦',
+        confirmText: "知道啦",
+        cancelText: "噢噢噢",
+        confirmColor: "#FF007F",
+        cancelColor: "#7F7F7F",
+        success: function (res) {
+          wx.redirectTo({
+            url: '/pages/finish/finish?stuID=' + id
+          })
+        }
+      })
+      return;
+    }
     let nowAns = this.data.studentAnswer
     let haveDetail = false;
     if (nowAns[this.data.questionNum - 1] != null && nowAns[this.data.questionNum - 1] != ""){
@@ -349,11 +368,14 @@ Page({
         return;
       }
     }
-    console.log(this.data.studentAnswer)
-    console.log(this.data.stuInfo)
-    this.submit(haveDetail,this.data.studentAnswer,this.data.stuInfo)
+    let time = util.formatTime(new Date())
+    this.setData({
+      timeBefore:time.substring(0,10)
+    })
+    time = time.substring(0, 10)
+    this.submit(haveDetail,this.data.studentAnswer,this.data.stuInfo,time)
   },
-  submit: function (haveDetail,stuAns,stuInfo) {
+  submit: function (haveDetail,stuAns,stuInfo,time) {
     console.log(stuInfo)
     let num = stuInfo.detailNum.toString()
     wx.showModal({
@@ -365,37 +387,41 @@ Page({
       cancelColor: "#7F7F7F",
       success: function (res) {
         if (res.confirm) {
+          let flag = 0
           if(haveDetail){
-            wx.showLoading({
-              title: '更新学生数据...',
-            })
-            qcloud.request({
-              url: config.service.refreshStudent,
-              method: 'POST',
-              login: true,
-              success: result => {
-                wx.hideLoading()
-                let data = result.data
-
-                if (!data.code) {
-                  console.log(data)
-                } else {
-                  wx.showToast({
-                    icon: 'none',
-                    title: '更新学生信息失败'
-                  })
-                }
-              },
-              fail: () => {
-                wx.hideLoading()
-
+              flag = 1
+          }
+          wx.showLoading({
+            title: '更新学生数据...',
+          })
+          qcloud.request({
+            url: config.service.refreshStudent,
+            method: 'POST',
+            login: true,
+            data: {
+              time: time,
+              flag: flag
+            },
+            success: result => {
+              wx.hideLoading()
+              let data = result.data
+              if (!data.code) {
+                console.log(data)
+              } else {
                 wx.showToast({
                   icon: 'none',
                   title: '更新学生信息失败'
                 })
               }
-            })
-          }
+            },
+            fail: () => {
+              wx.hideLoading()
+              wx.showToast({
+                icon: 'none',
+                title: '更新学生信息失败'
+              })
+            }
+          })        
           wx.showLoading({
             title: '正在上传您的反馈'
           })

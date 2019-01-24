@@ -17,12 +17,19 @@ module.exports = {
     let user = ctx.state.$wxInfo.userinfo.openId
 
     let list = await DB.query('SELECT * FROM student WHERE student.user = ? ', [user])
-    let count = list[0].detailNum + 1
-    await DB.query('UPDATE student SET detailNum = ? WHERE student.user = ?', [count, user])
+    let time = ctx.request.body.time
+    let flag = ctx.request.body.flag
+    if(flag == 1){
+      let count = list[0].detailNum + 1
+      await DB.query('UPDATE student SET detailNum = ? AND updateTime = ?WHERE student.user = ?', [count,time,user])
+    }else{
+      await DB.query('UPDATE student SET updateTime = ? WHERE student.user = ?', [time, user])
+    }
 
     ctx.state.data = {}
   },
   
+
   getMe:async ctx => {
     let user = ctx.state.$wxInfo.userinfo.openId
     let list = await DB.query('SELECT * FROM student WHERE student.user = ? ', [user])

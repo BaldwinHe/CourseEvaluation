@@ -1,0 +1,4 @@
+<!--pages/start/start.wxml-->
+<view class='imagesize'>
+ <image class='bg' src='/images/opinion.png'></image>
+</view>

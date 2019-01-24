@@ -21,7 +21,8 @@ CREATE TABLE `student` (
   `user` varchar(255) NOT NULL,
   `username` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `studentID` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `detailNum` int(11) DEFAULT 0
+  `detailNum` int(11) DEFAULT 0,
+  `updateTime` varchar(255) CHARACTER SET utf8 DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

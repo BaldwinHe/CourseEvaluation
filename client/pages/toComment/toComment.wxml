@@ -62,6 +62,6 @@
 
 <view class='submit' wx:if="{{userInfo && !flag}}" bindtap='checkChoice'>
     <image class='submit-img' src='/images/email.png'></image>
-    <view class='submit-text'>提交评价</view>
+    <view class='submit-text'>提交反馈</view>
 </view>
 
