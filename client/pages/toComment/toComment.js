@@ -10,6 +10,7 @@ Page({
    */
   data: {
     stuID: "请输入您的学号",
+    stuInfo:null,
     theStudentNumber:"",
     hiddenUnsure:true,
     hiddenInput:true,
@@ -248,7 +249,34 @@ Page({
       studentAnswer:arr
     })
   },
-
+  getStudent(){
+    wx.showLoading({
+      title: '信息加载中...',
+    })
+    qcloud.request({
+      url: config.service.getStudent,
+      success: result => {
+        wx.hideLoading()
+        if (!result.data.code) {
+          console.log(result.data.data)
+          this.setData({
+            stuInfo:result.data.data
+          })
+        } else {
+          wx.showToast({
+            title: '信息加载失败!',
+          })
+        }
+      },
+      fail: result => {
+        wx.hideLoading()
+        wx.showToast({
+          title: '信息加载失败!',
+        })
+        console.log("Error!")
+      },
+    })
+  },
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
@@ -265,6 +293,7 @@ Page({
     })
     app.checkSession({
       success: ({ userInfo }) => {
+        this.getStudent()
         this.setData({
           userInfo
         })
@@ -301,6 +330,10 @@ Page({
   },
   checkChoice:function() {
     let nowAns = this.data.studentAnswer
+    let haveDetail = false;
+    if (nowAns[this.data.questionNum - 1] != null && nowAns[this.data.questionNum - 1] != ""){
+      haveDetail = true
+    }
     for(var i = 0;i<this.data.questionNum-1;i++){
       if(nowAns[i]==null){
         wx.showModal({
@@ -316,18 +349,93 @@ Page({
         return;
       }
     }
-    this.submit()
+    console.log(this.data.studentAnswer)
+    console.log(this.data.stuInfo)
+    this.submit(haveDetail,this.data.studentAnswer,this.data.stuInfo)
   },
-  submit: function () {
+  submit: function (haveDetail,stuAns,stuInfo) {
+    console.log(stuInfo)
+    let num = stuInfo.detailNum.toString()
     wx.showModal({
       title: '注意啦',
-      content: '提交了就不能修改了哦,文本反馈这学期共需(有效)填写10次才不会扣平时分,你已填写' + '1' + '次',
+      content: '提交了就不能修改了哦,文本反馈这学期共需(有效)填写10次才不会扣平时分,你已填写' + num + '次',
       confirmText:"确认提交",
       cancelText:"我还改改",
       confirmColor: "#FF007F",
       cancelColor: "#7F7F7F",
       success: function (res) {
         if (res.confirm) {
+          if(haveDetail){
+            wx.showLoading({
+              title: '更新学生数据...',
+            })
+            qcloud.request({
+              url: config.service.refreshStudent,
+              method: 'POST',
+              login: true,
+              success: result => {
+                wx.hideLoading()
+                let data = result.data
+
+                if (!data.code) {
+                  console.log(data)
+                } else {
+                  wx.showToast({
+                    icon: 'none',
+                    title: '更新学生信息失败'
+                  })
+                }
+              },
+              fail: () => {
+                wx.hideLoading()
+
+                wx.showToast({
+                  icon: 'none',
+                  title: '更新学生信息失败'
+                })
+              }
+            })
+          }
+          wx.showLoading({
+            title: '正在上传您的反馈'
+          })
+          let comment = stuAns;
+          console.log(JSON.stringify(comment))
+          qcloud.request({
+            url: config.service.addComment,
+            login: true,
+            method: 'PUT',
+            data: {
+              studentID: stuInfo.studentID,
+              content: JSON.stringify(comment)
+            },
+            success: result => {
+              wx.hideLoading()
+              let data = result.data
+              if (data.code) {
+                wx.showToast({
+                  icon: 'none',
+                  title: '上传反馈失败'
+                })
+              }else{
+                wx.showToast({
+                  icon: 'success',
+                  title: '成功上传反馈',
+                  duration: 3000
+                })
+                wx.redirectTo({
+                  url: '/pages/finish/finish?stuID=' + stuInfo.studentID
+                })
+              }
+            },
+            fail: () => {
+              wx.hideLoading()
+              wx.showToast({
+                icon: 'none',
+                title: '上传反馈失败'
+              })
+            }
+          })
           console.log('用户点击确定')
         } else if (res.cancel) {
           console.log('用户点击取消')

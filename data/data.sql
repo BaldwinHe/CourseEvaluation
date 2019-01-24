@@ -20,7 +20,8 @@ CREATE TABLE `student` (
   `id` int(11) NOT NULL AUTO_INCREMENT  PRIMARY KEY,
   `user` varchar(255) NOT NULL,
   `username` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `studentID` varchar(255) CHARACTER SET utf8 DEFAULT NULL
+  `studentID` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `detailNum` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

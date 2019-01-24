@@ -32,7 +32,17 @@ router.get('/message', controllers.message.get)
 // POST 用来处理微信转发过来的客服消息
 router.post('/message', controllers.message.post)
 
+//更新学生具体评论
+router.post('/student', validationMiddleware, controllers.student.refresh)
+
+//获取学生信息
+router.get('/student', validationMiddleware, controllers.student.getMe)
 
 // 添加学生
 router.put('/student', validationMiddleware, controllers.student.add)
+
+router.put('/classcomment', validationMiddleware, controllers.classcomment.add)
+
 module.exports = router
+
+

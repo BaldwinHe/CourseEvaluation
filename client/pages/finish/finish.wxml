@@ -1,0 +1,4 @@
+<!--pages/finish/finish.wxml-->
+<view class='imagesize'>
+ <image class='bg' src='/images/study.png'></image>
+</view>

@@ -27,6 +27,12 @@ var config = {
 
         // 添加学生
         addStudent: `${host}/weapp/student`,
+        // 更新学生
+        refreshStudent: `${host}/weapp/student`,
+
+        getStudent: `${host}/weapp/student`,
+
+        addComment: `${host}/weapp/classcomment`
     }
 };
 

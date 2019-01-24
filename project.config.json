@@ -10,5 +10,32 @@
 	},
 	"appid": "wx0d95fae6dfff8729",
 	"projectname": "CourseEvaluation",
-	"condition": {}
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"list": []
+		},
+		"miniprogram": {
+			"current": 0,
+			"list": [
+				{
+					"id": -1,
+					"name": "完成反馈页面",
+					"pathName": "pages/finish/finish",
+					"scene": null
+				}
+			]
+		}
+	}
 }
